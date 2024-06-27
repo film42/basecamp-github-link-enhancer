@@ -2,12 +2,8 @@
   "manifest_version": 3,
   "name": "Basecamp GitHub Link Enhancer",
   "version": "1.0",
-  "permissions": [
-    "activeTab"
-  ],
-  "host_permissions": [
-    "https://3.basecamp.com/*"
-  ],
+  "permissions": ["activeTab"],
+  "host_permissions": ["https://3.basecamp.com/*"],
   "content_scripts": [
     {
       "matches": ["https://github.com/*"],
