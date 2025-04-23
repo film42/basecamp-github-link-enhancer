@@ -47,6 +47,7 @@ function createWidget2(info) {
 
   const widget = document.createElement("span");
   widget.className = "basecamp-widget";
+  widget.dataset.basecampUrl = info.url;
   widget.title = info.url; // Set the original URL as a tooltip
   widget.style.cssText = `
     display: inline-block;
@@ -106,3 +107,42 @@ function observePageChanges() {
 }
 
 observePageChanges();
+
+// Add a copy handler that will replace the pretty span with the original basecamp url.
+document.addEventListener("copy", function(e) {
+  const selection = window.getSelection();
+  if (!selection.rangeCount) return;
+
+  // Create a documentFragment to hold our modified content
+  const fragment = document.createDocumentFragment();
+  const originalRange = selection.getRangeAt(0);
+
+  // Clone the selection's contents into our fragment
+  fragment.appendChild(originalRange.cloneContents());
+
+  // Find all spans with data-basecamp-url in our fragment
+  const spans = fragment.querySelectorAll("span[data-basecamp-url]");
+  let modified = false;
+
+  // Replace each span with its URL in text form
+  spans.forEach(span => {
+    const url = span.getAttribute("data-basecamp-url");
+    if (url) {
+      const textNode = document.createTextNode(url);
+      span.parentNode.replaceChild(textNode, span);
+      modified = true;
+    }
+  });
+
+  // Only if we made changes, serialize and set to clipboard
+  if (modified) {
+    e.preventDefault();
+
+    // Create a temporary div to get the text content
+    const tempDiv = document.createElement("div");
+    tempDiv.appendChild(fragment);
+
+    // Set the clipboard content
+    e.clipboardData.setData("text/plain", tempDiv.textContent);
+  }
+});
