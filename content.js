@@ -5,7 +5,9 @@ function replaceBasecampLinks() {
     fetchBasecampInfo(link.href)
       .then((info) => {
         const widget = createWidget2(info);
-        link.parentNode.replaceChild(widget, link);
+        if (link.parentNode !== null) {
+          link.parentNode.replaceChild(widget, link);
+        }
       })
       .catch((error) => {
         console.error("Error replacing Basecamp link:", error);
@@ -45,19 +47,25 @@ function createWidget2(info) {
   // text.textContent = info.title;
   text.textContent = `(${info.project}) ${info.title}`;
 
+  const isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  const backgroundColor = isDarkMode ? "#0d1117" : "white";
+
+  const color = isDarkMode ? "#388bfd" : "#0052CC";
+
   const widget = document.createElement("span");
   widget.className = "basecamp-widget";
   widget.dataset.basecampUrl = info.url;
   widget.title = info.url; // Set the original URL as a tooltip
   widget.style.cssText = `
     display: inline-block;
-    background-color: white;
+    background-color: ${backgroundColor};
     border-radius: 3px;
     padding: 2px 6px;
     margin: 0 2px;
     font-size: 12px;
     line-height: 1.4;
-    color: #0052CC;
+    color: ${color};
     text-decoration: none;
     border: 1px solid;
     cursor: pointer;
@@ -67,12 +75,14 @@ function createWidget2(info) {
   widget.appendChild(logo);
   widget.appendChild(text);
 
+  const hoverColor = isDarkMode ? "#21262d" : "#F4F5F7";
+
   // Add hover effect
   widget.addEventListener("mouseover", () => {
-    widget.style.backgroundColor = "#F4F5F7";
+    widget.style.backgroundColor = hoverColor;
   });
   widget.addEventListener("mouseout", () => {
-    widget.style.backgroundColor = "white";
+    widget.style.backgroundColor = backgroundColor;
   });
 
   widget.addEventListener("click", (e) => {
